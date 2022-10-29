@@ -1,0 +1,3 @@
+from models.abstract import AbstractModel
+
+class Resultados(AbstractModel):
