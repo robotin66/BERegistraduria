@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from pymongo import MongoClient
 
 from controllers.mesas import *
 from models.mesas import Mesas
@@ -16,16 +17,16 @@ def ping():
 @app.route("/mesas", methods=["GET"])
 def mesas():
     lista = []
-    for i in control_mesa.trae_todas():
+    for i in control_mesa.trae_todo():
         lista.append(i.__dict__)
     return jsonify({
+        "Total": control_mesa.total(),
         "Mesas": lista,
-        "Total": control_mesa.total()
     }), 200
 
 
 @app.route("/mesas/<int:num_mesa>", methods=["GET"])
-def traer_mesa_por_id(num_mesa):
+def traer_mesa_por_num(num_mesa):
     try:
         encontrada = control_mesa.trae_elemento(num_mesa)
     except MesaInexistente:
@@ -58,14 +59,18 @@ def actualiza_mesa(num_mesa):
 
 @app.route("/mesas/<int:num_mesa>", methods=["DELETE"])
 def borra_mesa(num_mesa):
-    try:
-        control_mesa.borra(num_mesa)
-    except MesaInexistente:
-        return jsonify({"Error": "Mesa a borrar no encontrada"}), 404
+    resultado = control_mesa.borra(num_mesa)
+    if resultado > 0:
+        return jsonify({
+            "Mensaje": f"Mesa {num_mesa} borrada exitosamente"
+        }), 200
     else:
         return jsonify({
-            "Mensaje": f"Mesa {num_mesa} borrada exitosamente",
-        }), 200
+            "Error": f"Mesa no encontrada"
+        }), 404
 
+
+MONGO_URI = "mongodb+srv://robotin66:sektor666@clusterg40e4.p6aztfp.mongodb.net/?retryWrites=true&w=majority"
+cliente = MongoClient(MONGO_URI)
 
 app.run(host="127.0.0.1", port=5001, debug=True)

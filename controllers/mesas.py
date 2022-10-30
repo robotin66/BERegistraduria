@@ -1,48 +1,75 @@
+from pymongo import MongoClient
+
 from controllers.abstract import AbstractController
 from models.mesas import Mesas
+
+MONGO_URI = "mongodb+srv://robotin66:regis123@clusterg40e4.p6aztfp.mongodb.net/?retryWrites=true&w=majority"
 
 
 class ControladorMesa(AbstractController):
 
     def __init__(self):
-        self._lista = []
+        self._cliente = MongoClient(MONGO_URI)
+        self.BD = self._cliente.get_database("BERegistraduria")
+        self.COLL = self.BD.get_collection(Mesas.COLLECTION)
 
-    def trae_todas(self):
-        return self._lista
+    def trae_todo(self):
+        _lista = []
+        for elemento in self.COLL.find():
+            elemento["_id"] = str(elemento["_id"])
+            _lista.append(
+                Mesas(
+                    num_mesa=elemento["num_mesa"],
+                    ced_inscritas=elemento["ced_inscritas"],
+                    _id=elemento["_id"],
+                )
+            )
+        return _lista
 
     def trae_elemento(self, num_mesa):
-        indice = self._busca_elemento(num_mesa)
-        return self._lista[indice]
+        elemento = self.COLL.find_one({"num_mesa": int(num_mesa)})
+        if elemento is None:
+            raise MesaInexistente
+        return Mesas(
+                    num_mesa=elemento["num_mesa"],
+                    ced_inscritas=elemento["ced_inscritas"],
+                    _id=str(elemento["_id"]),
+                )
 
     def crea(self, body):
         creada = Mesas(
-            _id=body["_id"],
             num_mesa=body["num_mesa"],
             ced_inscritas=body["ced_inscritas"],
         )
-        self._lista.append(creada)
+        insertada = self.COLL.insert_one({
+            "num_mesa": creada.numero_mesa,
+            "ced_inscritas": creada.cedulas_inscritas,
+        })
+        creada._id = str(insertada.inserted_id)
         return creada
 
     def actualiza(self, num_mesa, body):
-        indice = self._busca_elemento(num_mesa)
-        encontrada = self._lista[indice]
-        encontrada._id = body["_id"]
-        encontrada.numero_mesa = body["num_mesa"]
+        encontrada = self.trae_elemento(num_mesa)
         encontrada.cedulas_inscritas = body["ced_inscritas"]
+        self.COLL.update_one({
+                "num_mesa": int(num_mesa)
+            },
+            {
+                "$set": {
+                    "ced_inscritas": encontrada.cedulas_inscritas,
+                }
+            }
+
+        )
         return encontrada
 
     def borra(self, num_mesa):
-        indice = self._busca_elemento(num_mesa)
-        self._lista.pop(indice)
+        resultado = self.COLL.delete_one({"num_mesa": num_mesa})
+        return resultado.deleted_count
 
     def total(self):
-        return len(self._lista)
+        return self.COLL.count_documents({})
 
-    def _busca_elemento(self, elemento):
-        for indice, encontrada in enumerate(self._lista):
-            if encontrada.numero_mesa == elemento:
-                return indice
-        raise MesaInexistente
 
 class MesaInexistente(Exception):
     pass

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 class AbstractController(ABC):
 
     @abstractmethod
-    def trae_todas(self):
+    def trae_todo(self):
         pass
 
     @abstractmethod
