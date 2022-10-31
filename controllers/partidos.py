@@ -1,12 +1,12 @@
 from controllers.abstract import AbstractController
-from models.mesas import Mesas
-from repositories.mesas import RespositorioMesas
+from models.partidos import Partidos
+from repositories.partidos import RespositorioPartidos
 
 
-class ControladorMesas(AbstractController):
+class ControladorPartidos(AbstractController):
 
     def __init__(self):
-        self.repositorio = RespositorioMesas()
+        self.repositorio = RespositorioPartidos()
 
     def trae_todo(self):
         return self.repositorio.trae_todo()
@@ -15,15 +15,15 @@ class ControladorMesas(AbstractController):
         return self.repositorio.trae_elemento(_id)
 
     def crea(self, body):
-        creada = Mesas(
-            num_mesa=body["num_mesa"],
-            ced_inscritas=body["ced_inscritas"],
+        creada = Partidos(
+            nombre=body["nombre"],
+            lema=body["lema"],
         )
         return self.repositorio.guarda(creada)
 
     def actualiza(self, _id, body):
         encontrada = self.trae_elemento(_id)
-        encontrada.cedulas_inscritas = body["ced_inscritas"]
+        encontrada.lema = body["lema"]
         return self.repositorio.guarda(encontrada)
 
     def borra(self, _id):

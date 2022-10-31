@@ -1,12 +1,11 @@
 from flask import Flask, jsonify, request
-from pymongo import MongoClient
 
 from controllers.mesas import *
-from models.mesas import Mesas
+from models.mesas import Mesas, MesaInexistente
 
 app = Flask(__name__)
 
-control_mesa = ControladorMesa()
+control_mesa = ControladorMesas()
 
 
 @app.route("/", methods=["GET"])
@@ -20,15 +19,15 @@ def mesas():
     for i in control_mesa.trae_todo():
         lista.append(i.__dict__)
     return jsonify({
-        "Total": control_mesa.total(),
+        "Cantidad": control_mesa.total(),
         "Mesas": lista,
     }), 200
 
 
-@app.route("/mesas/<int:num_mesa>", methods=["GET"])
-def traer_mesa_por_num(num_mesa):
+@app.route("/mesas/<string:_id>", methods=["GET"])
+def traer_mesa_por_id(_id):
     try:
-        encontrada = control_mesa.trae_elemento(num_mesa)
+        encontrada = control_mesa.trae_elemento(_id)
     except MesaInexistente:
         return jsonify({"Error": "Mesa no encontrada"}), 404
     else:
@@ -44,33 +43,30 @@ def crea_mesa():
     }), 201
 
 
-@app.route("/mesas/<int:num_mesa>", methods=["PUT"])
-def actualiza_mesa(num_mesa):
+@app.route("/mesas/<string:_id>", methods=["PUT"])
+def actualiza_mesa(_id):
     try:
-        actualizada = control_mesa.actualiza(num_mesa, request.get_json())
+        actualizada = control_mesa.actualiza(_id, request.get_json())
     except MesaInexistente:
         return jsonify({"Error": "Mesa a borrar no encontrada"}), 404
     else:
         return jsonify({
-            "Mensaje": f"Mesa {num_mesa} actualizada exitosamente",
+            "Mensaje": f"Mesa {actualizada.numero_mesa} actualizada exitosamente",
             "Mesa": actualizada.__dict__
         }), 200
 
 
-@app.route("/mesas/<int:num_mesa>", methods=["DELETE"])
-def borra_mesa(num_mesa):
-    resultado = control_mesa.borra(num_mesa)
+@app.route("/mesas/<string:_id>", methods=["DELETE"])
+def borra_mesa(_id):
+    resultado = control_mesa.borra(_id)
     if resultado > 0:
         return jsonify({
-            "Mensaje": f"Mesa {num_mesa} borrada exitosamente"
+            "Mensaje": "Mesa borrada exitosamente"
         }), 200
     else:
         return jsonify({
-            "Error": f"Mesa no encontrada"
+            "Error": "Mesa no encontrada"
         }), 404
 
-
-MONGO_URI = "mongodb+srv://robotin66:sektor666@clusterg40e4.p6aztfp.mongodb.net/?retryWrites=true&w=majority"
-cliente = MongoClient(MONGO_URI)
 
 app.run(host="127.0.0.1", port=5001, debug=True)
