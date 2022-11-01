@@ -1,12 +1,12 @@
-from controllers.abstract import AbstractController
-from models.mesas import Mesas
-from repositories.mesas import RespositorioMesas
+from controllers.abstract import *
+from models.mesas import *
+from repositories.mesas import *
 
 
 class ControladorMesas(AbstractController):
 
     def __init__(self):
-        self.repositorio = RespositorioMesas()
+        self.repositorio = RepositorioMesas(model=Mesas, inexistente=MesaInexistente)
 
     def trae_todo(self):
         return self.repositorio.trae_todo()

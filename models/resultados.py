@@ -1,8 +1,5 @@
-from bson import DBRef, ObjectId
-
-from models.abstract import AbstractModel
-from models.candidatos import Candidatos
-from models.mesas import Mesas
+from models.candidatos import *
+from models.mesas import *
 
 
 class Resultados(AbstractModel):
@@ -45,6 +42,5 @@ class Resultados(AbstractModel):
         }
 
 
-
-class ResultadoInexistente(Exception):
+class ResultadoInexistente(ElementoInexistente):
     pass

@@ -1,4 +1,4 @@
-from models.abstract import AbstractModel
+from models.abstract import *
 
 
 class Mesas(AbstractModel):
@@ -29,5 +29,5 @@ class Mesas(AbstractModel):
         return self.__dict__
 
 
-class MesaInexistente(Exception):
+class MesaInexistente(ElementoInexistente):
     pass

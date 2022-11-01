@@ -23,3 +23,6 @@ class AbstractModel(metaclass=ABCMeta):
     def pasa_json(self, data):
         raise NotImplemented
 
+
+class ElementoInexistente(Exception):
+    pass

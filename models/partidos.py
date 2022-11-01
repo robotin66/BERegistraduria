@@ -1,4 +1,4 @@
-from models.abstract import AbstractModel
+from models.abstract import *
 
 
 class Partidos(AbstractModel):
@@ -28,5 +28,5 @@ class Partidos(AbstractModel):
         return self.__dict__
 
 
-class PartidoInexistente(Exception):
+class PartidoInexistente(ElementoInexistente):
     pass

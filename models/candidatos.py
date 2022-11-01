@@ -1,7 +1,6 @@
 from bson import DBRef, ObjectId
 
-from models.abstract import AbstractModel
-from models.partidos import Partidos
+from models.partidos import *
 
 
 class Candidatos(AbstractModel):
@@ -53,5 +52,5 @@ class Candidatos(AbstractModel):
         }
 
 
-class CandidatoInexistente(Exception):
+class CandidatoInexistente(ElementoInexistente):
     pass

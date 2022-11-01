@@ -1,12 +1,12 @@
-from controllers.abstract import AbstractController
-from models.partidos import Partidos
-from repositories.partidos import RespositorioPartidos
+from controllers.abstract import *
+from models.partidos import *
+from repositories.partidos import *
 
 
 class ControladorPartidos(AbstractController):
 
     def __init__(self):
-        self.repositorio = RespositorioPartidos()
+        self.repositorio = RepositorioPartidos(model=Partidos, inexistente=PartidoInexistente)
 
     def trae_todo(self):
         return self.repositorio.trae_todo()

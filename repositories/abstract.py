@@ -1,20 +1,22 @@
 from abc import ABC
+from typing import Type
 
 from bson import ObjectId, DBRef
 from pymongo import MongoClient
 
-from models.abstract import AbstractModel
+from models.abstract import *
 
 MONGO_URI = "mongodb+srv://robotin66:regis123@clusterg40e4.p6aztfp.mongodb.net/?retryWrites=true&w=majority"
 DB = "BERegistraduria"
 
 
 class RepositorioAbstracto(ABC):
-    def __init__(self, model: Type[AbstractModel]):
+    def __init__(self, model: Type[AbstractModel], inexistente: Type[ElementoInexistente]):
         self._cliente = MongoClient(MONGO_URI)
         self.BD = self._cliente.get_database(DB)
         self.COLL = self.BD.get_collection(model.COLLECTION)
         self.model = model
+        self.inexistente = inexistente
 
     def guarda(self, modelo: AbstractModel):
         if modelo.es_nuevo():
@@ -37,14 +39,14 @@ class RepositorioAbstracto(ABC):
     def trae_todo(self):
         lista = []
         for doc in self.COLL.find():
-            self.llenar_DBRef(doc)
+            self.llenar_db_ref(doc)
             lista.append(AbstractModel.factory(doc))
         return lista
 
     def trae_elemento(self, elemento):
         doc = self.COLL.find_one({"_id": ObjectId(elemento)})
         if not doc:
-            raise Exception
+            raise self.inexistente
         self.llenar_db_ref(doc)
         return self.model.factory(doc)
 
