@@ -11,7 +11,7 @@ class AbstractController(ABC):
     def trae_elemento(self, elemento):
         pass
 
-    @abstractmethod
+    @staticmethod
     def crea(self, body):
         pass
 

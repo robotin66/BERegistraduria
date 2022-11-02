@@ -18,14 +18,14 @@ class Mesas(AbstractModel):
         }
 
     @staticmethod
-    def factory(data):
+    def factory(doc):
         return Mesas(
-            num_mesa=data["num_mesa"],
-            ced_inscritas=data["ced_inscritas"],
-            _id=str(data["_id"]) if data.get("_id") else None,
+            num_mesa=doc["num_mesa"],
+            ced_inscritas=doc["ced_inscritas"],
+            _id=str(doc["_id"]) if doc.get("_id") else None,
         )
 
-    def pasa_json(self, data):
+    def pasa_json(self):
         return self.__dict__
 
 

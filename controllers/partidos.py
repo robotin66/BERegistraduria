@@ -6,7 +6,7 @@ from repositories.partidos import *
 class ControladorPartidos(AbstractController):
 
     def __init__(self):
-        self.repositorio = RepositorioPartidos(model=Partidos, inexistente=PartidoInexistente)
+        self.repositorio = RepositorioPartidos(Partidos, PartidoInexistente)
 
     def trae_todo(self):
         return self.repositorio.trae_todo()
@@ -22,12 +22,12 @@ class ControladorPartidos(AbstractController):
         return self.repositorio.guarda(creada)
 
     def actualiza(self, _id, body):
-        encontrada = self.trae_elemento(_id)
+        encontrada = self.repositorio.trae_elemento(_id)
         encontrada.lema = body["lema"]
         return self.repositorio.guarda(encontrada)
 
     def borra(self, _id):
-        encontrada = self.trae_elemento(_id)
+        encontrada = self.repositorio.trae_elemento(_id)
         return self.repositorio.borra(encontrada)
 
     def total(self):

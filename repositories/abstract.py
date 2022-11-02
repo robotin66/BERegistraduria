@@ -11,11 +11,11 @@ DB = "BERegistraduria"
 
 
 class RepositorioAbstracto(ABC):
-    def __init__(self, model: Type[AbstractModel], inexistente: Type[ElementoInexistente]):
+    def __init__(self, modelo: Type[AbstractModel], inexistente: Type[ElementoInexistente]):
         self._cliente = MongoClient(MONGO_URI)
         self.BD = self._cliente.get_database(DB)
-        self.COLL = self.BD.get_collection(model.COLLECTION)
-        self.model = model
+        self.COLL = self.BD.get_collection(modelo.COLLECTION)
+        self.modelo = modelo
         self.inexistente = inexistente
 
     def guarda(self, modelo: AbstractModel):
@@ -40,7 +40,7 @@ class RepositorioAbstracto(ABC):
         lista = []
         for doc in self.COLL.find():
             self.llenar_db_ref(doc)
-            lista.append(AbstractModel.factory(doc))
+            lista.append(self.modelo.factory(doc))
         return lista
 
     def trae_elemento(self, elemento):
@@ -48,7 +48,7 @@ class RepositorioAbstracto(ABC):
         if not doc:
             raise self.inexistente
         self.llenar_db_ref(doc)
-        return self.model.factory(doc)
+        return self.modelo.factory(doc)
 
     def total(self):
         return self.COLL.count_documents({})

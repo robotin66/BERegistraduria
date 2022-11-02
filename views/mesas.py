@@ -1,7 +1,7 @@
 from flask import jsonify, request, Blueprint
 
 from controllers.mesas import *
-from models.mesas import MesaInexistente
+from models.mesas import *
 
 control_mesa = ControladorMesas()
 mesas_bp = Blueprint("mesas_blue", __name__)
@@ -11,7 +11,7 @@ mesas_bp = Blueprint("mesas_blue", __name__)
 def mesas():
     lista = []
     for i in control_mesa.trae_todo():
-        lista.append(i.__dict__)
+        lista.append(i.pasa_json())
     return jsonify({
         "Cantidad": control_mesa.total(),
         "Mesas": lista,
@@ -25,7 +25,7 @@ def traer_mesa_por_id(_id):
     except MesaInexistente:
         return jsonify({"Error": "Mesa no encontrada"}), 404
     else:
-        return jsonify(encontrada.__dict__), 200
+        return jsonify(encontrada.pasa_json()), 200
 
 
 @mesas_bp.route("/", methods=["POST"])
@@ -33,7 +33,7 @@ def crea_mesa():
     creada = control_mesa.crea(request.get_json())
     return jsonify({
         "Mensaje": "Mesa creada exitosamente",
-        "Mesa": creada.__dict__
+        "Mesa": creada.pasa_json()
     }), 201
 
 
@@ -42,22 +42,24 @@ def actualiza_mesa(_id):
     try:
         actualizada = control_mesa.actualiza(_id, request.get_json())
     except MesaInexistente:
-        return jsonify({"Error": "Mesa a borrar no encontrada"}), 404
+        return jsonify({"Error": "Mesa a actualizar no encontrada"}), 404
     else:
         return jsonify({
             "Mensaje": f"Mesa {actualizada.numero_mesa} actualizada exitosamente",
-            "Mesa": actualizada.__dict__
+            "Mesa": actualizada.pasa_json()
         }), 200
 
 
 @mesas_bp.route("/<string:_id>", methods=["DELETE"])
 def borra_mesa(_id):
-    resultado = control_mesa.borra(_id)
-    if resultado > 0:
-        return jsonify({
-            "Mensaje": "Mesa borrada exitosamente"
-        }), 200
-    else:
+    try:
+        resultado = control_mesa.borra(_id)
+    except MesaInexistente:
         return jsonify({
             "Error": "Mesa no encontrada"
         }), 404
+    else:
+        return jsonify({
+            "Mensaje": "Mesa borrada exitosamente"
+        }), 200
+

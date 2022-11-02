@@ -15,12 +15,12 @@ class AbstractModel(metaclass=ABCMeta):
     def prepara_guardar(self):
         raise NotImplemented
 
-    @abstractmethod
-    def factory(self, data):
+    @staticmethod
+    def factory(doc):
         raise NotImplemented
 
     @abstractmethod
-    def pasa_json(self, data):
+    def pasa_json(self):
         raise NotImplemented
 
 

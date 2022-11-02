@@ -6,7 +6,7 @@ from repositories.mesas import *
 class ControladorMesas(AbstractController):
 
     def __init__(self):
-        self.repositorio = RepositorioMesas(model=Mesas, inexistente=MesaInexistente)
+        self.repositorio = RepositorioMesas(Mesas, MesaInexistente)
 
     def trae_todo(self):
         return self.repositorio.trae_todo()
@@ -22,12 +22,13 @@ class ControladorMesas(AbstractController):
         return self.repositorio.guarda(creada)
 
     def actualiza(self, _id, body):
-        encontrada = self.trae_elemento(_id)
+        encontrada = self.repositorio.trae_elemento(_id)
+        encontrada.numero_mesa = body["num_mesa"]
         encontrada.cedulas_inscritas = body["ced_inscritas"]
         return self.repositorio.guarda(encontrada)
 
     def borra(self, _id):
-        encontrada = self.trae_elemento(_id)
+        encontrada = self.repositorio.trae_elemento(_id)
         return self.repositorio.borra(encontrada)
 
     def total(self):

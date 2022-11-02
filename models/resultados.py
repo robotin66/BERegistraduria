@@ -21,6 +21,7 @@ class Resultados(AbstractModel):
             "candidato": DBRef(id=ObjectId(self.candidato._id), coll=Candidatos.COLLECTION)
         }
 
+    @staticmethod
     def factory(self, data):
         assert data.get("mesa")
         assert data.get("candidato")
@@ -33,7 +34,7 @@ class Resultados(AbstractModel):
             _id=str(data["_id"]) if data.get("_id") else None,
         )
 
-    def pasa_json(self, data):
+    def pasa_json(self):
         return {
             "_id": self._id,
             "votos": self.votos,

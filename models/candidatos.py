@@ -20,35 +20,41 @@ class Candidatos(AbstractModel):
         self.partido = partido
 
     def prepara_guardar(self):
+        partido_ref = None
+        if self.partido:
+            partido_ref = DBRef(id=ObjectId(self.partido._id), collection=Partidos.COLLECTION)
         return {
             "resolucion": self.resolucion,
             "cedula": self.cedula,
             "nombre": self.nombre,
             "apellido": self.apellido,
-            "partido": DBRef(id=ObjectId(self.partido._id), coll=Candidatos.COLLECTION)
+            "partido": partido_ref
         }
 
-    def factory(self, data):
-        partido = None
-        if data.get("partido"):
-            partido = Partidos.factory(data.get("partido"))
+    @staticmethod
+    def factory(data):
+        assert data.get("partido")
+        partido = Partidos.factory(data.get("partido"))
         return Candidatos(
-            nombre=data["nombre"],
-            apellido=data["apellido"],
             resolucion=data["resolucion"],
             cedula=data["cedula"],
+            nombre=data["nombre"],
+            apellido=data["apellido"],
             partido=partido,
             _id=str(data["_id"]) if data.get("_id") else None,
         )
 
     def pasa_json(self):
+        partido = None
+        if self.partido:
+            partido = self.partido.pasa_json()
         return {
             "_id": self._id,
-            "nombre": self.nombre,
-            "apellido": self.cedula,
             "resolucion": self.resolucion,
             "cedula": self.cedula,
-            "partido": self.partido.pasa_json()
+            "nombre": self.nombre,
+            "apellido": self.apellido,
+            "partido": partido
         }
 
 

@@ -6,7 +6,7 @@ class Partidos(AbstractModel):
     nombre = None
     lema = None
 
-    def __init__(self, _id, nombre, lema):
+    def __init__(self, nombre, lema, _id=None):
         super().__init__(_id)
         self.nombre = nombre
         self.lema = lema
@@ -17,14 +17,15 @@ class Partidos(AbstractModel):
             "lema": self.lema,
         }
 
-    def factory(self, data):
+    @staticmethod
+    def factory(data):
         return Partidos(
             nombre=data["nombre"],
             lema=data["lema"],
             _id=str(data["_id"]) if data.get("_id") else None,
         )
 
-    def pasa_json(self, data):
+    def pasa_json(self):
         return self.__dict__
 
 
